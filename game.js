@@ -39,9 +39,18 @@ function startGame() {
             const emoji = emojis[col];
             const x = elementSize * (colI + 0.55); // Centra horizontalmente
             const y = elementSize * (rowI + 0.85); // Centra verticalmente
-            game.fillText(emoji, x, y)
+
+            game.fillText(emoji, x, y);
+
+            if (col == "O") {
+                if (!playerPosition.x && !playerPosition.y) {
+                    playerPosition.x = x;
+                    playerPosition.y = y;
+                }
+            }
         });
     });
+    movePlayer();
 }
 
 function setCanvasSize() {
@@ -61,43 +70,63 @@ function setCanvasSize() {
 
 }
 
+function movePlayer() {
+    game.fillText(emojis["PLAYER"], playerPosition.x , playerPosition.y);
+}
+
 function moveByKeys(event) {
 
     if (event.key == "ArrowUp" || event.key == "w" || event.key == "W") {
-        console.log("arriba");
+        moveUp();
     }
     else if (event.key == "ArrowLeft" || event.key == "a" || event.key == "A") {
-        console.log("izquierda");
+        moveLeft();
     }
     else if (event.key == "ArrowRight" || event.key == "d" || event.key == "D") {
-        console.log("derecha");
+        moveRight();
     }
-    else if (event.key == "ArrowDown" || event.key == "s" || event.key == "w") {
-        console.log("abajo");
+    else if (event.key == "ArrowDown" || event.key == "s" || event.key == "S") {
+        moveDown();
     }
 
 }
 
 function moveUp() {
-    console.log("Arriba");
+    if ((playerPosition.y - elementSize) < 0) {
+        console.log("Fuera");
+    }
+    else {
+        playerPosition.y -= elementSize;
+        setCanvasSize();
+    }
 }
 
 function moveLeft() {
-    console.log("Izqueirda");
+    if ((playerPosition.x - elementSize) < 0) {
+        console.log("Fuera");
+    }
+    else {
+        playerPosition.x -= elementSize;
+        setCanvasSize();
+    }
 }
 
 function moveRight() {
-    console.log("derecha");
+    if ((playerPosition.x + elementSize) > canvasSize) {
+        console.log("Fuera");
+    }
+    else {
+        playerPosition.x += elementSize;
+        setCanvasSize();
+    }
 }
 
 function moveDown() {
-    console.log("Abajo");
+    if ((playerPosition.y + elementSize) > canvasSize) {
+        console.log("Fuera");
+    }
+    else {
+        playerPosition.y += elementSize;
+        setCanvasSize();
+    }
 }
-
-
-    /* game.fillRect(0, 0, 100, 100);
-    game.clearRect(0, 0, 50, 50);
-    game.font = "25px Verdana";
-    game.fillStyle = "purple";
-    game.textAlign = "center";
-    game.fillText("Zombie run", 100, 100); */
