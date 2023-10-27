@@ -5,12 +5,18 @@ const btnLeft = document.querySelector("#left");
 const btnRight = document.querySelector("#right");
 const btnDown = document.querySelector("#down");
 const htmlLives = document.querySelector("#lives");
+const time = document.querySelector("#time");
 
 //Variables globales cambiantes
 let canvasSize = 0;
 let elementSize = 0;
 let level = 0;
 let lives = 3;
+
+let timeStart;
+let timePlayer;
+let timeInterval;
+
 let trees = [[]];
 let map;
 let mapRows;
@@ -47,6 +53,11 @@ function startGame() {
     }
     else {
         canvasSize = window.innerHeight * 0.8;
+    }
+
+    if (!timeStart) {
+        timeStart = Date.now();
+        timeInterval = setInterval(showTime, 100);
     }
 
     //Iniciamos el tamaño del canvas para renderizar
@@ -95,6 +106,10 @@ function showLives() {
     hearthArray.forEach(hearth => htmlLives.append(hearth));
 }
 
+function showTime() {
+    time.innerHTML = Date.now() - timeStart;
+}
+
 //Pasamos al siguiente nivel
 function nextLevel() {
     if (level + 1 < maps.length) {
@@ -116,6 +131,7 @@ function failLevel() {
     else {
         lives = 3;
         level = 0;
+        timeStart = undefined;
         restartPlayer();
     }
 }
@@ -130,6 +146,7 @@ function restartPlayer() {
 //Ganar el juego
 function gameWin() {
     console.log("Ganastes el juego!!");
+    clearInterval(timeInterval);
 }
 
 
