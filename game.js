@@ -6,12 +6,14 @@ const btnRight = document.querySelector("#right");
 const btnDown = document.querySelector("#down");
 const htmlLives = document.querySelector("#lives");
 const time = document.querySelector("#time");
+const htmlRecord = document.querySelector("#record");
 
 //Variables globales cambiantes
 let canvasSize = 0;
 let elementSize = 0;
 let level = 0;
 let lives = 3;
+let record;
 
 let timeStart;
 let timePlayer;
@@ -60,6 +62,18 @@ function startGame() {
         timeInterval = setInterval(showTime, 100);
     }
 
+    if (record === undefined) {
+        if (localStorage.getItem("record") === null) {
+            localStorage.setItem("record", 0);
+            record = 0;
+            console.log("No exite aun un record");
+        }
+        else {
+            record = parseFloat(localStorage.getItem("record"));
+            console.log("Existe un record y se esta cargando");
+        }
+    }
+
     //Iniciamos el tamaño del canvas para renderizar
     canvas.setAttribute("width", canvasSize);
     canvas.setAttribute("height", canvasSize);
@@ -69,11 +83,15 @@ function startGame() {
     mapRows = map.trim().split("\n");
     mapRowCols = mapRows.map(row => row.trim().split(""));
 
+    //Iniciamos el tamaño de sus elementos y lo configuramos
     elementSize = (canvasSize / 10);
     game.font = elementSize + "px Verdana";
     game.textAlign = "center"; // Establece la alineación en el centro
+
+    //Comprobamos donde estan los arboles y mostramos los datos del jugador
     trees = Array(10).fill(false).map(() => Array(10).fill(false));
     showLives();
+    showRecord();
 
     //Recorremos el mapa y configuramos el juego
     mapRowCols.forEach((row, rowI) => {
@@ -106,8 +124,27 @@ function showLives() {
     hearthArray.forEach(hearth => htmlLives.append(hearth));
 }
 
+function convertToTime(miliseconds) {
+    const segundos = Math.floor(miliseconds / 1000); // Convertir a segundos
+    const minutos = Math.floor(segundos / 60);
+    const segundosRestantes = segundos % 60;
+
+    // Formatear minutos y segundos con dos dígitos
+    const minutosFormateados = minutos.toString().padStart(2, '0');
+    const segundosFormateados = segundosRestantes.toString().padStart(2, '0');
+
+    return { minutos: minutosFormateados, segundos: segundosFormateados };
+}
+
 function showTime() {
-    time.innerHTML = Date.now() - timeStart;
+    timePlayer = Date.now() - timeStart;
+    const coversion = convertToTime(timePlayer);
+    time.innerHTML = coversion.minutos + ":" + coversion.segundos;
+}
+
+function showRecord() {
+    const recordTime = convertToTime(record);
+    htmlRecord.innerHTML = recordTime.minutos + ":" + recordTime.segundos;
 }
 
 //Pasamos al siguiente nivel
@@ -147,6 +184,12 @@ function restartPlayer() {
 function gameWin() {
     console.log("Ganastes el juego!!");
     clearInterval(timeInterval);
+    const pastRecord = parseFloat(localStorage.getItem("record"));
+    if (timePlayer < pastRecord || pastRecord == 0) {
+        localStorage.setItem("record", timePlayer);
+        record = localStorage.getItem("record", timePlayer);
+        showRecord();
+    }
 }
 
 
